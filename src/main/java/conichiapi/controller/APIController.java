@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.logging.Logger;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -21,6 +23,7 @@ import java.util.HashMap;
 
 @RestController
 public class APIController {
+    private final static Logger LOGGER = Logger.getLogger(APIController.class.getName());
 
     @Autowired
     VatRepository vatRepository;
@@ -37,7 +40,7 @@ public class APIController {
     @GetMapping("/api/vat/validate")
     public VatResponse validateVat(@RequestParam(name = "vat_number") String vatNumber) {
         if (vatRepository.findByVatNumber(vatNumber) != null) {
-            System.out.println("LOL FOUND IT " + vatNumber);
+            LOGGER.info("Found previous request: " + vatNumber);
             return vatRepository.findByVatNumber(vatNumber);
         }
 
@@ -56,8 +59,9 @@ public class APIController {
     public ConversionResponse convertCurrency(@RequestParam(name = "source_currency") String sourceCurrency, @RequestParam(name = "target_currency") String targetCurrency, @RequestParam BigDecimal amount) {
         ConversionResponse prevConversion = conversionRepository.findBySourceCurrencyAndTargetCurrencyOrderByIdDesc(sourceCurrency, targetCurrency);
         if (prevConversion != null && Math.abs(prevConversion.getTimestamp() - Instant.now().toEpochMilli()) < 900000) { //15 min expire for fetching currency info once again
-            System.out.println("LOL FOUND IT " + sourceCurrency + " " + targetCurrency);
-            System.out.println(prevConversion.getTimestamp() + " vs " + Instant.now().toEpochMilli() + " " + (prevConversion.getTimestamp() - Instant.now().toEpochMilli()));
+            LOGGER.info("Found previous request: " + sourceCurrency + " " + targetCurrency);
+            LOGGER.info("Previous request timestamp: " + prevConversion.getTimestamp() + " - now: " + Instant.now().toEpochMilli() +
+                    " " + Math.abs(prevConversion.getTimestamp() - Instant.now().toEpochMilli()));
             BigDecimal multiplier = prevConversion.getConversionMultiplier();
             BigDecimal convertedAmount = multiplier.multiply(amount);
             return new ConversionResponse(sourceCurrency, targetCurrency, amount, multiplier, convertedAmount);
@@ -68,10 +72,7 @@ public class APIController {
         ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
         Gson gson = new Gson();
 
-        System.out.println(String.format("%s_%s", sourceCurrency, targetCurrency));
-
         HashMap<String, Object> responseMap = gson.fromJson(response.getBody(), HashMap.class);
-        System.out.println(response.getBody());
         BigDecimal multiplier = new BigDecimal(responseMap.get(String.format("%s_%s", sourceCurrency, targetCurrency)).toString());
         BigDecimal convertedAmount = multiplier.multiply(amount);
 
