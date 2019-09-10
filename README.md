@@ -41,3 +41,16 @@
 
 `sudo docker run -p 8081:8081 -d conichi`
 
+## Endpoints
+
+##### `GET /time`
+
+Example: `GET http://localhost:8081/time`
+
+##### `GET /api/currency/convert`
+
+Example: `GET http://localhost:8081/api/currency/convert?source_currency=TRY&target_currency=USD&amount=12345`
+
+##### `GET /api/vat/validate`
+
+Example: `GET http://localhost:8081/api/vat/validate?vat_number=LU26375245`
