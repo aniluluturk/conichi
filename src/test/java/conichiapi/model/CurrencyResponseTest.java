@@ -52,5 +52,26 @@ class CurrencyResponseTest {
         assertEquals(v.getTotalCalculatedAmount().intValue(), 999);
     }
 
+    @Test
+    void testSettersAndGetters() {
+        CurrencyResponse v = new CurrencyResponse();
+        v.setStatus(Status.SUCCESS);
+        v.setConversionMultiplier(new BigDecimal("456"));
+        v.setSourceAmount(new BigDecimal("123"));
+        v.setTotalCalculatedAmount(new BigDecimal("999"));
+        v.setSourceCurrency("TRY");
+        v.setTargetCurrency("EUR");
+        v.setTimestamp(Instant.now().toEpochMilli());
+
+        assertEquals(v.getStatus(), Status.SUCCESS);
+        assertTrue(Instant.now().toEpochMilli() - v.getTimestamp() < 60000); //tests shouldn't run 60 seconds, so...
+        assertEquals(v.getConversionMultiplier().intValue(), 456 );
+        assertEquals(v.getSourceAmount().intValue(), 123);
+        assertEquals(v.getSourceCurrency(), "TRY");
+        assertEquals(v.getStatus(), Status.SUCCESS);
+        assertEquals(v.getTargetCurrency(), "EUR");
+        assertEquals(v.getTotalCalculatedAmount().intValue(), 999);
+    }
+
 
 }

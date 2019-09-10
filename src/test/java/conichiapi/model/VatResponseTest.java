@@ -38,5 +38,18 @@ class VatResponseTest {
         assertEquals(v.getValid(), true);
     }
 
+    @Test
+    void testSettersAndGetters() {
+        VatResponse v = new VatResponse();
+        v.setStatus(Status.SUCCESS);
+        v.setCountryCode("UK");
+        v.setValid(true);
+        v.setVatNumber("12345");
+
+        assertEquals(v.getStatus(), Status.SUCCESS);
+        assertEquals(v.getVatNumber(), "12345");
+        assertEquals(v.getCountryCode(), "UK");
+        assertEquals(v.getValid(), true);
+    }
 
 }
