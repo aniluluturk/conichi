@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import conichiapi.model.CurrencyResponse;
 import conichiapi.repository.CurrencyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -17,8 +18,16 @@ import java.util.logging.Logger;
 public class CurrencyService {
     private final static Logger LOGGER = Logger.getLogger(CurrencyService.class.getName());
 
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
     @Autowired
     CurrencyRepository currencyRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     public CurrencyResponse convertCurrency(String sourceCurrency, String targetCurrency, BigDecimal amount) {
         CurrencyResponse prevConversion = currencyRepository.findBySourceCurrencyAndTargetCurrencyOrderByIdDesc(sourceCurrency, targetCurrency);
@@ -31,7 +40,6 @@ public class CurrencyService {
             return new CurrencyResponse(sourceCurrency, targetCurrency, amount, multiplier, convertedAmount);
         }
 
-        RestTemplate restTemplate = new RestTemplate();
         String fooResourceUrl = String.format("https://free.currconv.com/api/v7/convert?q=%s_%s&compact=ultra&apiKey=b784e053d11c0e443630", sourceCurrency, targetCurrency);
         ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
         Gson gson = new Gson();
