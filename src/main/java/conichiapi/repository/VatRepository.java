@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VatRepository extends CrudRepository<VatResponse, Long> {
-    public VatResponse findByVatNumber(String vatNumber);
+    VatResponse findByVatNumber(String vatNumber);
 }
