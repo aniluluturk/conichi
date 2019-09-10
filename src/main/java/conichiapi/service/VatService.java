@@ -13,13 +13,8 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 @Component
-public class VatService {
+public class VatService extends AbstractService {
     private final static Logger LOGGER = Logger.getLogger(VatService.class.getName());
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 
     @Autowired
     VatRepository vatRepository;

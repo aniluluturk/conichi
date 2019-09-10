@@ -15,13 +15,8 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 @Component
-public class CurrencyService {
+public class CurrencyService extends AbstractService {
     private final static Logger LOGGER = Logger.getLogger(CurrencyService.class.getName());
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 
     @Autowired
     CurrencyRepository currencyRepository;

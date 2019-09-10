@@ -1,11 +1,14 @@
-package conichiapi;
+package conichiapi.service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import conichiapi.model.CurrencyResponse;
 import conichiapi.repository.CurrencyRepository;
 import conichiapi.service.CurrencyService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -17,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CurrencyServiceTest {
@@ -31,16 +35,17 @@ public class CurrencyServiceTest {
     CurrencyRepository currencyRepository;
 
     @Test
-    public void givenMockingIsDoneByMockito_whenGetIsCalled_shouldReturnMockedObject() {
-        //CurrencyResponse emp = new CurrencyResponse("TRY", "EUR", new BigDecimal("123"), new BigDecimal("456"), new BigDecimal("999"));
+    public void mockedCurrencyServiceShouldReturnProvidedMultiplier() {
         HashMap<String, Object> responseMap = new HashMap<>();
         responseMap.put("TRY_EUR", 123.456);
+        Gson gson = new GsonBuilder().create();
+        String serializedMap = gson.toJson(responseMap);
         Mockito
-                .when(restTemplate.getForEntity("http://localhost:8080/employee/E001", CurrencyResponse.class))
-                .thenReturn(new ResponseEntity(responseMap, HttpStatus.OK));
-        Mockito.when(currencyRepository.save(new CurrencyResponse())).thenReturn(new CurrencyResponse());
+                .when(restTemplate.getForEntity(any(String.class), any()))
+                .thenReturn(new ResponseEntity(serializedMap, HttpStatus.OK));
+        Mockito.when(currencyRepository.save(any(CurrencyResponse.class))).thenReturn(new CurrencyResponse());
 
         CurrencyResponse currencyResponse = currencyService.convertCurrency("TRY", "EUR", new BigDecimal("123"));
-        assertEquals(currencyResponse.getConversionMultiplier(), new BigDecimal(123.456));
+        assertEquals(currencyResponse.getConversionMultiplier().doubleValue(), 123.456);
     }
 }
